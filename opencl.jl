@@ -97,4 +97,4 @@ for n in sizes
     end
 end
 
-save_to_csv(results, "opencl_AlderLake.csv")
+save_to_csv(results, "opencl.csv")

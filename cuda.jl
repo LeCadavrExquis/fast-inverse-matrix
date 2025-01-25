@@ -73,4 +73,4 @@ for n in sizes
     end
 end
 
-save_to_csv(results, "cuda_AlderLake.csv")
+save_to_csv(results, "cuda.csv")

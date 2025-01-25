@@ -39,4 +39,4 @@ for n in sizes
     end
 end
 
-save_to_csv(results, "pure_julia.csv")
+save_to_csv(results, "julia.csv")
