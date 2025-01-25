@@ -34,8 +34,9 @@ Functions:
 1. **Install required packages**:
    ```julia
    using Pkg
-   Pkg.add("OpenCL")
    Pkg.add("SparseArrays")
    Pkg.add("LinearAlgebra")
    Pkg.add("CSV")
    Pkg.add("DataFrames")
+   Pkg.add("OpenCL")
+   Pkg.add("CUDA")

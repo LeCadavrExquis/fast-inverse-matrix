@@ -1,3 +1,4 @@
+include("util.jl")
 using CUDA
 using SparseArrays
 using LinearAlgebra
@@ -6,14 +7,19 @@ function mat_mul_cuda(A::Matrix{Float32}, B::Matrix{Float32})::Matrix{Float32}
     m, n = size(A)
     _, p = size(B)
 
-    a_flat = reshape(A, (m * n,))
-    b_flat = reshape(B, (n * p,))
+    a_flat = reduce(vcat, A)
+    b_flat = reduce(vcat, B)
 
-    d_a = CUDA.fill(a_flat, m * n)
-    d_b = CUDA.fill(b_flat, n * p)
-    d_c = CUDA.zeros(Float32, m, p)
+    d_a = CuArray{Float32}(undef, m, n)
+    copyto!(d_a, A)
+    d_b = CuArray{Float32}(undef, n, p)
+    copyto!(d_b, B)
+    d_c = CuArray{Float32}(undef, m, p)
 
-    @cuda threads=256 matmul_kernel(m, n, p, d_a, d_b, d_c)
+    threads_per_block = (16, 16)  # 16x16 threads per block
+    blocks_per_grid = (ceil(Int, m / threads_per_block[1]), ceil(Int, p / threads_per_block[2]))
+
+    @cuda threads=threads_per_block blocks=blocks_per_grid matmul_kernel(m, n, p, d_a, d_b, d_c)
 
     C = Array(d_c)
     return C
@@ -23,13 +29,15 @@ function matmul_kernel(Mdim, Ndim, Pdim, A, B, C)
     i = threadIdx().x + (blockIdx().x - 1) * blockDim().x
     j = threadIdx().y + (blockIdx().y - 1) * blockDim().y
 
-    tmp = 0.0f0
-    if i <= Ndim && j <= Mdim
-        for k in 1:Pdim
-            tmp += A[i + (k - 1) * Ndim] * B[k + (j - 1) * Pdim]
+    if i <= Mdim && j <= Pdim
+        tmp = 0.0f0
+        for k in 1:Ndim
+            tmp += A[i + (k - 1) * Mdim] * B[k + (j - 1) * Ndim]
         end
-        C[i + (j - 1) * Ndim] = tmp
+        C[i + (j - 1) * Mdim] = tmp
     end
+
+    return
 end
 
 function inverse_matrix_cuda(A::Matrix{Float32}, tol=Float32(1e-4), max_iter=1000)
@@ -65,7 +73,6 @@ for n in sizes
     for density in densities
         print("Test: n = $n, density = $density")
         A = convert(Matrix{Float32}, sprandn(n, n, density))
-
         t_elapsed = @elapsed inverse_matrix_cuda(A, tol)
 
         push!(results, (size=n, density=density, time=t_elapsed))
