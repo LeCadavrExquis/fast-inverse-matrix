@@ -7,9 +7,6 @@ function mat_mul_cuda(A::Matrix{Float32}, B::Matrix{Float32})::Matrix{Float32}
     m, n = size(A)
     _, p = size(B)
 
-    a_flat = reduce(vcat, A)
-    b_flat = reduce(vcat, B)
-
     d_a = CuArray{Float32}(undef, m, n)
     copyto!(d_a, A)
     d_b = CuArray{Float32}(undef, n, p)

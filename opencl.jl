@@ -8,17 +8,15 @@ function mat_mul_openCl(A::Matrix{Float32}, B::Matrix{Float32}):: Matrix{Float32
     m, n = size(A)
     _, p = size(B)
 
-    a_flat = reshape(A, (m * n,))
-    b_flat = reshape(B, (n * p,))
-
-    d_a = CLArray(a_flat; access=:r)
-    d_b = CLArray(b_flat; access=:r)
-    d_c = CLArray{Float32}(undef, m * p; access=:w)
+    d_a = CLArray{Float32}(undef, m * n)
+    d_b = CLArray{Float32}(undef, n * p)
+    d_c = CLArray{Float32}(undef, m * p)
+    copyto!(d_a, A)
+    copyto!(d_b, B)
+    C = zeros(Float32, p * m) 
 
     global_size = (m, p)
     local_size = (min(m, 16), min(p, 16))
-
-    C = zeros(Float32, p * m) 
 
     cl.queue!(:profile) do
         evt = clcall(mmul, Tuple{Int32, Int32, Int32, Ptr{Float32}, Ptr{Float32}, Ptr{Float32}},
