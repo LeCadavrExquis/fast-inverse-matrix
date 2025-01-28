@@ -6,7 +6,7 @@ The project shows different implementations of parallelization of computations u
 - **CUDA**
 - **MPI**
 
-![Alt text](doc/image.png)
+![Alt text](res/image.png)
 
 ## Required packages:
    ```julia
