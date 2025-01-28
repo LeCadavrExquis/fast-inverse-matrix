@@ -14,7 +14,7 @@ end
 
 # Macierz musi być kwadratowa, aby obliczyć ślad.
 function trace(A::AbstractMatrix{T}) where T
-    n, m = size(A)
+    n, _ = size(A)
     tr = zero(T)
     for i in 1:n
         tr += A[i, i]

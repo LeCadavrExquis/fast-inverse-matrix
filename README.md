@@ -1,37 +1,14 @@
-# Matrix Inversion and Multiplication using Julia
+# Fast iterative matrix inversion in Julia
 
-This project demonstrates different implementations of matrix multiplication and inversion using three distinct approaches:
-- **OpenCL**
+The project shows different implementations of parallelization of computations using distinct approaches:
 - **Julia**
+- **OpenCL**
 - **CUDA**
+- **MPI**
 
-## Requirements
+![Alt text](doc/image.png)
 
-- **Julia** (v1.0 or higher)
-- **OpenCL** library for Julia
-- **SparseArrays** and **LinearAlgebra** standard Julia packages
-- **DataFrames** and **CSV** for result storage
-
-## Files Overview
-
-### `openCL.jl`
-
-This file also contains kernel source code for the matrix multiplication (`mmul`), written in OpenCL C.
-
-### `main.jl`
-
-This file contains a standard Julia implementation for matrix inversion and matrix multiplication.
-
-### `seq.jl`
-
-### `util.sl`
-Functions:
-- `save_to_csv`
-- `trace`
-
-## How to Run
-
-1. **Install required packages**:
+## Required packages:
    ```julia
    using Pkg
    Pkg.add("SparseArrays")
@@ -40,3 +17,6 @@ Functions:
    Pkg.add("DataFrames")
    Pkg.add("OpenCL")
    Pkg.add("CUDA")
+   Pkg.add("MPI")
+   Pkg.add("Distributed")
+   Pkg.add("SharedArrays")
